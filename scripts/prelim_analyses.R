@@ -15,7 +15,7 @@ eggs$week <- as.factor(eggs$week)
 # Egg plots
 ggplot(data = eggs, aes(x = week, y = eggs, fill = treatment)) + #geom_bar(stat = "identity", position = "dodge") + 
        ylab("Number of eggs produced per female") + xlab("Week") + geom_boxplot(outlier.colour = NA) + scale_fill_nejm() + 
-       geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.35, position=position_dodge(0.8), alpha = 0.5)
+       geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.35, position=position_dodge(0.8), alpha = 1)
 
 eggs_sum <- read.csv("female_fitness_2022/female_fitness_eggs_sum.csv", stringsAsFactors = TRUE)
 
@@ -30,11 +30,20 @@ summary(egg_model)
 
 ### HATCHLINGS ###
 # Loading hatchling 
-hatchlings <- read.csv("female_fitness_hatchlings_sum.csv", stringsAsFactors = TRUE)
+hatchlings <- read.csv("data/cumulative_weekly_hatchlings.csv")
 
 # Hatchling plots
-ggplot(data = hatchlings, aes(x = day, y = cumulative, color = treatment)) + geom_point() +
-       scale_color_nejm() + geom_smooth() + ylab("Cumulative hatchlings produced per treatment") + ylim(0, 1500)
+ggplot(data = hatchlings, aes(x = week, y = cumulative, color = treatment)) + geom_point(size = 3) +
+       scale_color_nejm() + geom_smooth(se = F, size = 2) + ylab("Cumulative hatchlings produced per treatment") + ylim(0, 2000) 
+
+hatchlings_per_fem <- read.csv("data/hatchlings.csv") %>% 
+                      filter(treatment == "low" | treatment == "high")
+
+hatchlings_per_fem$treatment <- as.factor(hatchlings_per_fem$treatment)
+
+ggplot(data = hatchlings_per_fem, aes(x = treatment, y = total, fill = treatment)) + geom_boxplot(outlier.colour = NA) + 
+       scale_fill_nejm() + ylab("Total number of hatchlings produced per female") +
+         geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position=position_dodge(0.8), alpha = 0.5)
 
 
 ### INSEMINATION AND PURSUIT DURATIONS ###

@@ -6,20 +6,28 @@ library(lme4)
 library(DHARMa)
 library(car)
 library(ggsci)
+library(emmeans)
 
 ### Weekly egg laying rate ###
 # Loading egg data
-eggs <- read.csv("data/female_fitness_eggs_week.csv", stringsAsFactors = TRUE)
+eggs <- read.csv("data/female_fitness_eggs_week.csv")
+
+eggs$treatment <- as.factor(eggs$treatment)
 eggs$week <- as.factor(eggs$week)
+eggs$daily_rate <- as.numeric(eggs$daily_rate)
 
 # Egg plots
-ggplot(data = eggs, aes(x = week, y = eggs, fill = treatment)) + #geom_bar(stat = "identity", position = "dodge") + 
-  ylab("Number of eggs produced per female") + xlab("Week") + geom_boxplot(outlier.colour = NA) + scale_fill_nejm() + 
-  geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.35, position=position_dodge(0.8), alpha = 0.5)
+ggplot(data = eggs, aes(x = week, y = daily_rate, fill = treatment)) + #geom_bar(stat = "identity", position = "dodge") + 
+  ylab("Average number of eggs produced per day") + xlab("Week") + geom_boxplot(outlier.colour = NA) + scale_fill_nejm() + 
+  geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.35, position=position_dodge(0.8), alpha = 0) + 
+  theme(axis.text=element_text(size=16), axis.title=element_text(size=16))
 
 eggs$week <- as.numeric(eggs$week)
 
 egg_model <- lm(data = eggs, eggs ~ treatment + week)
 plot(egg_model)
 summary(egg_model)
+
+eggs_em <- emmeans(egg_model, c("week", "treatment"))
+pairs(eggs_em)
 
