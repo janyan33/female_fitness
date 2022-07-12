@@ -24,10 +24,6 @@ ggplot(data = eggs, aes(x = week, y = daily_rate, fill = treatment)) + #geom_bar
 
 eggs$week <- as.numeric(eggs$week)
 
-egg_model <- lm(data = eggs, eggs ~ treatment + week)
+egg_model <- lm(data = eggs, eggs ~ treatment*week)
 plot(egg_model)
 summary(egg_model)
-
-eggs_em <- emmeans(egg_model, c("week", "treatment"))
-pairs(eggs_em)
-

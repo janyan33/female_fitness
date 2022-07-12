@@ -45,6 +45,26 @@ ggplot(data = hatchlings_per_fem, aes(x = treatment, y = total, fill = treatment
        scale_fill_nejm() + ylab("Total number of hatchlings produced per female") +
          geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position=position_dodge(0.8), alpha = 0.5)
 
+hatchlings_mod <- lm(data = hatchlings_per_fem, log(total) ~ treatment)# family = Gamma(link = "log"))
+
+plot(hatchlings_mod)
+
+
+summary(hatchlings_mod)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### INSEMINATION AND PURSUIT DURATIONS ###
 # Insemination durations
