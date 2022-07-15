@@ -39,11 +39,15 @@ ggplot(data = hatchlings, aes(x = week, y = cumulative, color = treatment)) + ge
 hatchlings_per_fem <- read.csv("data/hatchlings.csv") %>% 
                       filter(treatment == "low" | treatment == "high")
 
+
 hatchlings_per_fem$treatment <- as.factor(hatchlings_per_fem$treatment)
+
+
 
 ggplot(data = hatchlings_per_fem, aes(x = treatment, y = total, fill = treatment)) + geom_boxplot(outlier.colour = NA) + 
        scale_fill_nejm() + ylab("Total number of hatchlings produced per female") +
-         geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position=position_dodge(0.8), alpha = 0.5)
+         geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position=position_dodge(0.8), alpha = 0.5) + ylim(50, 120) + 
+  theme(axis.text=element_text(size=16), axis.title=element_text(size=16))
 
 hatchlings_mod <- lm(data = hatchlings_per_fem, log(total) ~ treatment)# family = Gamma(link = "log"))
 
