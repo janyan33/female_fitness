@@ -39,9 +39,7 @@ ggplot(data = hatchlings, aes(x = week, y = cumulative, color = treatment)) + ge
 hatchlings_per_fem <- read.csv("data/hatchlings.csv") %>% 
                       filter(treatment == "low" | treatment == "high")
 
-
 hatchlings_per_fem$treatment <- as.factor(hatchlings_per_fem$treatment)
-
 
 
 ggplot(data = hatchlings_per_fem, aes(x = treatment, y = total, fill = treatment)) + geom_boxplot(outlier.colour = NA) + 
