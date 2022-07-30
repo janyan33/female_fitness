@@ -28,44 +28,6 @@ plot(egg_model)
 summary(egg_model)
 
 
-### HATCHLINGS ###
-# Loading hatchling 
-hatchlings <- read.csv("data/cumulative_weekly_hatchlings.csv")
-
-# Hatchling plots
-ggplot(data = hatchlings, aes(x = week, y = cumulative, color = treatment)) + geom_point(size = 3) +
-       scale_color_nejm() + geom_smooth(se = F, size = 2) + ylab("Cumulative hatchlings produced per treatment") + ylim(0, 2000) 
-
-hatchlings_per_fem <- read.csv("data/hatchlings.csv") %>% 
-                      filter(treatment == "low" | treatment == "high")
-
-hatchlings_per_fem$treatment <- as.factor(hatchlings_per_fem$treatment)
-
-ggplot(data = hatchlings_per_fem, aes(x = treatment, y = total, fill = treatment)) + geom_boxplot(outlier.colour = NA) + 
-       scale_fill_nejm() + ylab("Total number of hatchlings produced per female") +
-         geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position=position_dodge(0.8), alpha = 0.5)
-
-hatchlings_mod <- lm(data = hatchlings_per_fem, log(total) ~ treatment)# family = Gamma(link = "log"))
-
-plot(hatchlings_mod)
-
-
-summary(hatchlings_mod)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### INSEMINATION AND PURSUIT DURATIONS ###
 # Insemination durations
 durations <- read.csv("female_fitness_2022/ff_mating_durations.csv") %>% 
