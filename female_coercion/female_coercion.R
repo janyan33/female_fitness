@@ -37,7 +37,8 @@ all_data$mounts[is.na(all_data$mounts)] <- 0
 
 all_data <- all_data %>%  
             mutate(prop_run = (running_away_dur + refusal_posture)/trial_dur) %>% 
-            mutate(prop_insem_resist = insem_resist/insem_dur)
+            mutate(prop_insem_resist = insem_resist/insem_dur) %>% 
+            mutate(insem_lat = insem_start - encounter)
 
 all_data$day <- as.factor(all_data$day)
 
@@ -46,7 +47,7 @@ ggplot(data = all_data, aes(x = day, y = insem_dur, fill = treatment)) + geom_bo
        scale_fill_nejm() + ylab("Insemination duration (s)") + xlab("Day")
 
 # Insemination latency boxplot
-ggplot(data = all_data, aes(x = day, y = insem_start, fill = treatment)) + geom_boxplot() + 
+ggplot(data = all_data, aes(x = day, y = insem_lat, fill = treatment)) + geom_boxplot() + 
        scale_fill_nejm() + ylab("Insemination latency (s)") + xlab("Day")
 
 # Proportion of trial spent running away boxplot
