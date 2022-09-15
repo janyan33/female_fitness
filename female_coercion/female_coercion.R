@@ -69,30 +69,28 @@ ggplot(data = all_data, aes(x = day, y = mounts, fill = treatment)) + geom_boxpl
 focal_data <- read.csv("female_coercion/focal_data.csv")
 
 # Insemination duration model
-duration_model <- lm(data = focal_data, con_insem_dur ~ day)
-plot(duration_model)
-summary(duration_model)
+duration_glm <- glm(data = focal_data, con_insem_dur_2 ~ day, family = Gamma(link = "log"))
+plot(duration_glm)
+summary(duration_glm)
 
 # Insemination latency model
-latency_model <- lm(data = focal_data, con_insem_lat ~ day)
-plot(latency_model)
-summary(latency_model)
+latency_glm <- glm(data = focal_data, con_insem_lat_2 ~ day, Gamma(link = "log"))
+summary(latency_glm)
+plot(latency_glm) #scale_location not great
+
+latency_lm <- lm(data = focal_data, log(con_insem_lat_2) ~ day)
+plot(latency_lm) 
 
 # Proportion of trial spent running away model
-running_away_model <- glm(data = focal_data, con_prop_run_2 ~ day, family = Gamma(link = "log"))
-summary(running_away_model)
+running_away_glm <- glm(data = focal_data, con_prop_run_2 ~ day, family = Gamma(link = "log"))
+plot(running_away_glm)
+summary(running_away_glm)
 
-hist(log(focal_data$con_prop_run))
-plot(running_away_model)
+# lm and log=lm are bad in this case bc the scale-location diagnostics look quite bad
 
-
-focal_data$day <- as.factor(focal_data$day)
-ggplot(data = focal_data, aes(x = day, y = con_prop_run, fill = treatment)) + geom_boxplot() + 
-  scale_fill_nejm() + ylab("Proportion of insemination spent resisting") + xlab("Day")
-
-
-AIC(running_away_model)
-log_linear <- AIC(running_away_model)
-
+# Plotting what we analyze
+focal_data$day <- as.numeric(focal_data$day)
+ggplot(data = focal_data, aes(x = day, y = con_insem_dur_2, fill = treatment)) + geom_boxplot() + 
+  scale_fill_nejm() + ylab("Proportion of trial spent running away") + xlab("Day")
 
 
