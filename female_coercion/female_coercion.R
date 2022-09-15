@@ -6,6 +6,7 @@ library(lme4)
 library(DHARMa)
 library(car)
 library(ggsci)
+library(glmmTMB)
 
 # Consolidated dataframe 
 all_data <- read.csv("female_coercion/female_coercion_all.csv")
@@ -36,7 +37,7 @@ all_data$insem_resist[is.na(all_data$insem_resist)] <- 0
 all_data$mounts[is.na(all_data$mounts)] <- 0
 
 all_data <- all_data %>%  
-            mutate(prop_run = (running_away_dur + refusal_posture)/trial_dur) %>% 
+            mutate(prop_run = (running_away_dur + refusal_posture)/(trial_dur - insem_dur)) %>% 
             mutate(prop_insem_resist = insem_resist/insem_dur) %>% 
             mutate(insem_lat = insem_start - encounter)
 
@@ -62,6 +63,36 @@ ggplot(data = all_data, aes(x = day, y = prop_insem_resist, fill = treatment)) +
 # Number of mounts boxplot
 ggplot(data = all_data, aes(x = day, y = mounts, fill = treatment)) + geom_boxplot() + 
        scale_fill_nejm()  + ylab("Number of mounts during trial") + xlab("Day")
+
+
+## MODELS
+focal_data <- read.csv("female_coercion/focal_data.csv")
+
+# Insemination duration model
+duration_model <- lm(data = focal_data, con_insem_dur ~ day)
+plot(duration_model)
+summary(duration_model)
+
+# Insemination latency model
+latency_model <- lm(data = focal_data, con_insem_lat ~ day)
+plot(latency_model)
+summary(latency_model)
+
+# Proportion of trial spent running away model
+running_away_model <- glm(data = focal_data, con_prop_run_2 ~ day, family = Gamma(link = "log"))
+summary(running_away_model)
+
+hist(log(focal_data$con_prop_run))
+plot(running_away_model)
+
+
+focal_data$day <- as.factor(focal_data$day)
+ggplot(data = focal_data, aes(x = day, y = con_prop_run, fill = treatment)) + geom_boxplot() + 
+  scale_fill_nejm() + ylab("Proportion of insemination spent resisting") + xlab("Day")
+
+
+AIC(running_away_model)
+log_linear <- AIC(running_away_model)
 
 
 
