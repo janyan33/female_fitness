@@ -12,7 +12,7 @@ survival <- read.csv("data/longevity.csv", stringsAsFactors = TRUE)
 curve <- survfit(Surv(longevity) ~ treatment, data = survival)
 
 ggsurvplot(curve, data = survival, legend = "none", linetype = 1, size = 1.8, alpha = 0.7, color = "strata", 
-           palette = "nejm") + xlab("Day")
+           palette = "nejm", break.x.by = 5) + xlab("Day")
 
 ## Survival model
 long_model <- coxph(Surv(longevity) ~ treatment, data = survival)
