@@ -6,6 +6,9 @@ library(lme4)
 library(DHARMa)
 library(car)
 library(ggsci)
+library(lme4)
+library(MASS)
+library(glmmTMB)
 
 ### HATCHLINGS ###
 # Loading hatchling 
@@ -25,17 +28,11 @@ ggplot(data = hatchlings_per_fem, aes(x = treatment, y = total, fill = treatment
   geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position=position_dodge(0.8), alpha = 0.5)
 
 # Hatchling model
-hatchlings_mod <- lm(data = hatchlings_per_fem, log(total) ~ treatment)# family = Gamma(link = "log"))
-
-#plot(hatchlings_mod)
+hatchlings_mod <- glmmTMB(data = hatchlings_per_fem, total ~ treatment, family = nbinom2)
 
 summary(hatchlings_mod)
 
-
-
-
-
-
+plot(simulateResiduals(hatchlings_mod))
 
 
 
