@@ -8,9 +8,9 @@ library(car)
 library(ggsci)
 
 My_Theme = theme(
-  axis.title.x = element_text(size = 18),
+  axis.title.x = element_text(size = 16),
   axis.text.x = element_text(size = 16),
-  axis.title.y = element_text(size = 18), 
+  axis.title.y = element_text(size = 16), 
   axis.text.y = element_text(size = 16))
 
 ### EGGS ###
@@ -20,10 +20,9 @@ eggs$week <- as.factor(eggs$week)
 eggs$treatment <- factor(eggs$treatment, levels = c("low", "high"))
 
 
-
 # Egg plots
-ggplot(data = eggs, aes(x = week, y = eggs, fill = treatment)) + #geom_bar(stat = "identity", position = "dodge") + 
-       ylab("Number of eggs produced per female") + xlab("Week") + geom_boxplot(outlier.colour = NA) + 
+ggplot(data = eggs, aes(x = week, y = daily_rate_weighted, fill = treatment)) + #geom_bar(stat = "identity", position = "dodge") + 
+       ylab("Average number of eggs produced per day") + xlab("Week") + geom_boxplot(outlier.colour = NA) + 
        My_Theme + theme(legend.position = "none") + scale_fill_manual(values = c("#0072b5", "#bc3c29"))
 
 
