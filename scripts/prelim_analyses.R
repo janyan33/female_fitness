@@ -7,15 +7,27 @@ library(DHARMa)
 library(car)
 library(ggsci)
 
+My_Theme = theme(
+  axis.title.x = element_text(size = 18),
+  axis.text.x = element_text(size = 16),
+  axis.title.y = element_text(size = 18), 
+  axis.text.y = element_text(size = 16))
+
 ### EGGS ###
 # Loading egg data
-eggs <- read.csv("female_fitness_2022/female_fitness_eggs_week.csv", stringsAsFactors = TRUE)
+eggs <- read.csv("data/female_fitness_eggs_week.csv", stringsAsFactors = TRUE)
 eggs$week <- as.factor(eggs$week)
+eggs$treatment <- factor(eggs$treatment, levels = c("low", "high"))
+
+
 
 # Egg plots
 ggplot(data = eggs, aes(x = week, y = eggs, fill = treatment)) + #geom_bar(stat = "identity", position = "dodge") + 
-       ylab("Number of eggs produced per female") + xlab("Week") + geom_boxplot(outlier.colour = NA) + scale_fill_nejm() + 
-       geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.35, position=position_dodge(0.8), alpha = 1)
+       ylab("Number of eggs produced per female") + xlab("Week") + geom_boxplot(outlier.colour = NA) + 
+       My_Theme + theme(legend.position = "none") + scale_fill_manual(values = c("#0072b5", "#bc3c29"))
+
+
+       #geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.35, position=position_dodge(0.8), alpha = 1)
 
 eggs_sum <- read.csv("female_fitness_2022/female_fitness_eggs_sum.csv", stringsAsFactors = TRUE)
 
