@@ -6,6 +6,7 @@ library(lme4)
 library(DHARMa)
 library(car)
 library(ggsci)
+library(glmmTMB)
 
 My_Theme = theme(
   axis.title.x = element_text(size = 16),
@@ -22,9 +23,8 @@ eggs$treatment <- factor(eggs$treatment, levels = c("low", "high"))
 
 # Egg plots
 ggplot(data = eggs, aes(x = week, y = daily_rate_weighted, fill = treatment)) + #geom_bar(stat = "identity", position = "dodge") + 
-       ylab("Average number of eggs produced per day") + xlab("Week") + geom_boxplot(outlier.colour = NA) + 
+       ylab("Average daily egg production") + xlab("Week") + geom_boxplot(outlier.colour = NA) + 
        My_Theme + theme(legend.position = "none") + scale_fill_manual(values = c("#0072b5", "#bc3c29"))
-
 
        #geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.35, position=position_dodge(0.8), alpha = 1)
 
@@ -33,10 +33,13 @@ eggs_sum <- read.csv("female_fitness_2022/female_fitness_eggs_sum.csv", stringsA
 ggplot(data = eggs_sum, aes(x = day, y = cumulative, color = treatment)) + geom_point() +
        scale_color_nejm() + geom_smooth() + ylab("Cumulative eggs produced per treatment") + ylim(0, 1800)
 
+eggs$week <- as.numeric(eggs$week)
 
-egg_model <- lm(data = eggs, eggs ~ treatment + week)
-plot(egg_model)
-summary(egg_model)
+
+egg_model <- glm(data = eggs, daily_rate_weighted ~ week*treatment)
+
+plot(simulateResiduals(egg_model))
+
 
 
 ### INSEMINATION AND PURSUIT DURATIONS ###
