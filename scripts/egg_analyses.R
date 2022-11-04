@@ -17,8 +17,8 @@ eggs$week <- as.factor(eggs$week)
 eggs$daily_rate <- as.numeric(eggs$daily_rate)
 
 # Egg plots
-ggplot(data = eggs, aes(x = week, y = daily_rate, fill = treatment)) + #geom_bar(stat = "identity", position = "dodge") + 
-  ylab("Average number of eggs produced per day") + xlab("Week") + geom_boxplot(outlier.colour = NA) + scale_fill_nejm() + 
+ggplot(data = eggs, aes(x = week, y = daily_rate_weighted, fill = treatment)) + #geom_bar(stat = "identity", position = "dodge") + 
+  ylab("Average daily egg production") + xlab("Week") + geom_boxplot(outlier.colour = NA) + scale_fill_nejm() + 
   geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.35, position=position_dodge(0.8), alpha = 0) + 
   theme(axis.text=element_text(size=16), axis.title=element_text(size=16))
 
