@@ -39,7 +39,6 @@ ggplot(data = hatchlings_per_fem, aes(x = treatment, y = total, fill = treatment
 
 # Hatchling model
 hatchlings_mod <- glmmTMB(data = hatchlings_per_fem, total ~ treatment, family = nbinom2)
-hatchlings_mod <- lm(data = hatchlings_per_fem, total ~ treatment)
 
 summary(hatchlings_mod)
 

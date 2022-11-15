@@ -15,7 +15,7 @@ My_Theme = theme(
   axis.text.y = element_text(size = 16), 
   legend.title = element_text(size = 16))
 
-
+## USED THIS SECTION OF SCRIPT TO GENERATE THE CLEAN DATA FILE
 # Consolidated dataframe 
 all_data <- read.csv("female_coercion/female_coercion_all.csv")
 
@@ -34,6 +34,8 @@ all_data <- left_join(all_data, running_away, by = "trial_num")
 all_data <- left_join(all_data, refusal_post, by = "trial_num")
 all_data <- left_join(all_data, insem_resist, by = "trial_num")
 all_data <- left_join(all_data, mounts_num, by = "trial_num")
+
+write.csv(all_data, "female_coercion_all_R.csv")
 
 all_data <- all_data %>% 
            mutate(trial_dur = trial_end - encounter) 
@@ -80,22 +82,30 @@ ggplot(data = all_data, aes(x = day, y = mounts, fill = treatment)) + geom_boxpl
 focal_data <- read.csv("female_coercion/focal_data.csv")
 
 # Insemination duration model
-duration_glm <- lm(data = focal_data, con_insem_dur_2 ~ day)
-plot(duration_glm)
+duration_glm <- lm(data = focal_data, log(con_insem_dur + 60) ~ day)
+plot(simulateResiduals(duration_glm)) # looks fine
 summary(duration_glm)
+Anova(duration_glm, test.statistic = "Wald")
+
 
 # Insemination latency model
-latency_lm <- glm(data = focal_data, con_insem_lat_2 ~ day)
-summary(latency_glm)
-plot(latency_glm) #scale_location not great
-
-latency_lm <- lm(data = focal_data, log(con_insem_lat_2) ~ day)
-plot(latency_lm) 
+latency_lm <- glm(data = focal_data, log(con_insem_lat + 200) ~ day, family = Gamma(link = "log"))
+plot(simulateResiduals(latency_lm)) # looks fine
+summary(latency_lm)
+Anova(latency_lm, test.statistic = "Wald")
 
 # Proportion of trial spent running away model
-running_away_glm <- glm(data = focal_data, con_prop_run_2 ~ day, family = Gamma(link = "log"))
+running_away_glm <- glm(data = focal_data, log(con_prop_run + 2) ~ day, family = quasibinomial())
+
 plot(running_away_glm)
-summary(running_away_glm)
+
+plot(simulateResiduals(running_away_glm))
+Anova(running_away_glm, test.statistic = "Wald")
+
+
+hist((focal_data$con_prop_run) + 2)
+
+scatter.smooth(fitted(running_away_glm), resid(running_away_glm)); abline(h=0, lty=2)
 
 # lm and log=lm are bad in this case bc the scale-location diagnostics look quite bad
 
