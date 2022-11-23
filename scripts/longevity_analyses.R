@@ -5,6 +5,7 @@ library(survival)
 library(survminer)
 library(tidyverse)
 library(ggsci)
+library(car)
 
 My_Theme = theme(
   axis.title.x = element_text(size = 18),
@@ -24,3 +25,4 @@ ggsurvplot(curve, data = survival, legend = "none", linetype = 1, size = 1.8, al
 ## Survival model
 long_model <- coxph(Surv(longevity) ~ treatment, data = survival)
 summary(long_model)
+Anova(long_model)
