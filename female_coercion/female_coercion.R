@@ -82,36 +82,20 @@ ggplot(data = all_data, aes(x = day, y = mounts, fill = treatment)) + geom_boxpl
 focal_data <- read.csv("female_coercion/focal_data.csv")
 
 # Insemination duration model
-duration_glm <- lm(data = focal_data, log(con_insem_dur + 60) ~ day)
-plot(simulateResiduals(duration_glm)) # looks fine
-summary(duration_glm)
-Anova(duration_glm, test.statistic = "Wald")
-
+duration_lm <- glm(data = focal_data, log(con_insem_dur + 60) ~ day)
+plot(duration_lm) # looks fine
+summary(duration_lm)
+Anova(duration_lm, test.statistic = "Wald")
 
 # Insemination latency model
-latency_lm <- glm(data = focal_data, log(con_insem_lat + 200) ~ day, family = Gamma(link = "log"))
-plot(simulateResiduals(latency_lm)) # looks fine
+latency_lm <- glm(data = focal_data, log(con_insem_lat + 200) ~ day)
+plot((latency_lm)) # looks fine
 summary(latency_lm)
 Anova(latency_lm, test.statistic = "Wald")
 
 # Proportion of trial spent running away model
-running_away_glm <- glm(data = focal_data, log(con_prop_run + 2) ~ day, family = quasibinomial())
-
+running_away_glm <- glm(data = focal_data, log(con_prop_run + 2) ~ day)#, family = Gamma(link = "log"))
 plot(running_away_glm)
-
-plot(simulateResiduals(running_away_glm))
 Anova(running_away_glm, test.statistic = "Wald")
-
-
-hist((focal_data$con_prop_run) + 2)
-
-scatter.smooth(fitted(running_away_glm), resid(running_away_glm)); abline(h=0, lty=2)
-
-# lm and log=lm are bad in this case bc the scale-location diagnostics look quite bad
-
-# Plotting what we analyze
-focal_data$day <- as.numeric(focal_data$day)
-ggplot(data = focal_data, aes(x = day, y = con_prop_run_2, fill = treatment)) + geom_boxplot() + 
-  scale_fill_nejm() + ylab("Proportion of trial spent running away") + xlab("Day") #+ ylim(0, 0.15)
 
 
