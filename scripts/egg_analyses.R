@@ -25,13 +25,7 @@ ggplot(data = eggs, aes(x = week, y = daily_rate_weighted, fill = treatment)) + 
 
 eggs$week <- as.numeric(eggs$week)
 
-<<<<<<< HEAD
-egg_model <- lm(data = eggs, eggs ~ treatment + week)
-Anova(egg_model)
-=======
-egg_model <- lm(data = eggs, daily_rate_weighted ~ treatment*week)
-
+egg_model <- lm(data = eggs, daily_rate_weighted ~ treatment + week)
+summary(egg_model)
 
 plot(egg_model)
-summary(egg_model)
->>>>>>> 01d82919fa2d65cd1b98a8d395a649787c3a1711
