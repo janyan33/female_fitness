@@ -60,14 +60,16 @@ summary(duration_lm)
 Anova(duration_lm, test.statistic = "Wald")
 
 # Insemination latency model
-latency_lm <- glm(data = focal_data, log(con_insem_lat + 200) ~ day)
-plot((latency_lm)) # looks fine
-summary(latency_lm)
-Anova(latency_lm, test.statistic = "Wald")
+latency_glm <- glm(data = focal_data, log(con_insem_lat + 200) ~ day, family = Gamma(link = "log"))
+plot((latency_glm)) # looks fine
+summary(latency_glm)
+Anova(latency_glm, test.statistic = "Wald")
 
 # Proportion of trial spent running away model
-running_away_glm <- glm(data = focal_data, log(con_prop_run + 2) ~ day)#, family = Gamma(link = "log"))
+running_away_glm <- glm(data = focal_data, log(con_prop_run + 2) ~ day, family = quasibinomial())
 plot(running_away_glm)
+
+summary(running_away_glm)
 Anova(running_away_glm, test.statistic = "Wald")
 
 
