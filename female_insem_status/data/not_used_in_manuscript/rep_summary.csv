@@ -1,0 +1,11 @@
+replicate,mating_status,mounts_received,inseminations,unique_inseminations,insem_mount_ratio,no_interaction_fems,mounts_evaded,mounts_aborted
+1,distantly,12,6,6,0.5,0,0.42,0.25
+1,recently,14,2,1,0.142857143,1,0.36,0.8
+2,distantly,19,6,4,0.315789474,2,0.21,0.63
+2,recently,44,8,6,0.181818182,0,0.45,0.73
+3,distantly,20,5,2,0.25,3,0.4,0.2
+3,recently,27,4,4,0.148148148,0,0.588235294,0.571428571
+4,distantly,32,11,5,0.34375,1,0.41,0.43
+4,recently,20,3,3,0.15,1,0.65,0.67
+5,distantly,36,10,6,0.277777778,0,0.388888889,0.642857143
+5,recently,35,6,5,0.171428571,0,0.342857143,0.785714286

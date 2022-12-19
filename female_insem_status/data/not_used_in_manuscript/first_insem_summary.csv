@@ -1,0 +1,11 @@
+replicate,mating_status,mounts_received,inseminations,mounts_evaded,evade_rate,abort_rate,insem_mount_ratio
+1,distantly,9,6,3,0.333333333,0.142857143,0.666666667
+1,recently,11,1,4,0.363636364,0.857142857,0.090909091
+2,distantly,5,4,0,0,0.2,0.8
+2,recently,6,6,0,0,0,1
+3,distantly,6,2,2,0.333333333,0.333333333,0.333333333
+3,recently,10,4,4,0.4,0.5,0.4
+4,distantly,5,5,0,0,0,1
+4,recently,16,3,12,0.75,0.5,0.1875
+5,distantly,11,6,4,0.4,0.333333333,0.545454545
+5,recently,11,5,3,0.25,0.444444444,0.454545455
