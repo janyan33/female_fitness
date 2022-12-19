@@ -71,5 +71,3 @@ plot(running_away_glm)
 
 summary(running_away_glm)
 Anova(running_away_glm, test.statistic = "Wald")
-
-
