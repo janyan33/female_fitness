@@ -17,25 +17,7 @@ My_Theme = theme(
 
 ## USED THIS SECTION OF SCRIPT TO GENERATE THE CLEAN DATA FILE
 # Consolidated dataframe 
-all_data <- read.csv("female_coercion/female_coercion_all.csv")
-
-# Dataframes for individual behaviours exported from BORIS
-insem_data <- read.csv("female_coercion/insem.csv")
-encounters <- read.csv("female_coercion/encounters.csv")
-running_away <- read.csv("female_coercion/running_away.csv")
-refusal_post <- read.csv("female_coercion/refusal_posture.csv")
-insem_resist <- read.csv("female_coercion/insem_resist.csv")
-mounts_num <- read.csv("female_coercion/mounts_num.csv")
-
-# Joining dataframes
-all_data <- left_join(all_data, insem_data, by = "trial_num")
-all_data <- left_join(all_data, encounters, by = "trial_num")
-all_data <- left_join(all_data, running_away, by = "trial_num")
-all_data <- left_join(all_data, refusal_post, by = "trial_num")
-all_data <- left_join(all_data, insem_resist, by = "trial_num")
-all_data <- left_join(all_data, mounts_num, by = "trial_num")
-
-write.csv(all_data, "female_coercion_all_R.csv")
+all_data <- read.csv("female_coercion/female_coercion_all_R.csv")
 
 all_data <- all_data %>% 
            mutate(trial_dur = trial_end - encounter) 
@@ -57,7 +39,6 @@ all_data$day <- as.factor(all_data$day)
 ggplot(data = all_data, aes(x = day, y = insem_dur, fill = treatment)) + geom_boxplot() + 
        scale_fill_nejm() + ylab("Insemination duration (s)") + xlab("Day") + My_Theme +
        coord_cartesian(ylim = c(0, 150))
-       
 
 # Insemination latency boxplot
 ggplot(data = all_data, aes(x = day, y = insem_lat, fill = treatment)) + geom_boxplot() + 
@@ -69,20 +50,11 @@ ggplot(data = all_data, aes(x = day, y = prop_run, fill = treatment)) + geom_box
        scale_fill_nejm() + ylim(0, 0.2) + ylab("Female evasion rate") + 
        xlab("Day") + My_Theme + coord_cartesian(ylim = c(0, 0.2))
 
-# Proportion of insemination duration spent resisting boxplot
-ggplot(data = all_data, aes(x = day, y = prop_insem_resist, fill = treatment)) + geom_boxplot() + 
-       scale_fill_nejm() + ylab("Proportion of insemination spent resisting") + xlab("Day")
-
-# Number of mounts boxplot
-ggplot(data = all_data, aes(x = day, y = mounts, fill = treatment)) + geom_boxplot() + 
-       scale_fill_nejm()  + ylab("Number of mounts during trial") + xlab("Day")
-
-
 ## MODELS
 focal_data <- read.csv("female_coercion/focal_data.csv")
 
 # Insemination duration model
-duration_lm <- glm(data = focal_data, log(con_insem_dur + 60) ~ day)
+duration_lm <- lm(data = focal_data, log(con_insem_dur + 60) ~ day)
 plot(duration_lm) # looks fine
 summary(duration_lm)
 Anova(duration_lm, test.statistic = "Wald")
