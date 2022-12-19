@@ -16,13 +16,12 @@ My_Theme = theme(
 survival <- read.csv("data/longevity.csv", stringsAsFactors = TRUE)
 
 ## Survival curves
-curve <- survfit(Surv(longevity) ~ treatment, data = survival)
+curve <- survfit(Surv(longevity, status) ~ treatment, data = survival)
 
-ggsurvplot(curve, data = survival, legend = "none", linetype = 1, size = 1.8, alpha = 0.7, color = "strata", 
+ggsurvplot(curve, data = survival, legend = "none", linetype = 1, size = 1.8, alpha = 1, color = "strata", 
            palette = "nejm", font.x = 22, 
            font.y = 22, font.tickslab = 16) + xlab("Day") + ylab("Proportion of females alive")
 
 ## Survival model
-long_model <- coxph(Surv(longevity) ~ treatment, data = survival)
+long_model <- coxph(Surv(longevity, status) ~ treatment, data = survival)
 summary(long_model)
-Anova(long_model)

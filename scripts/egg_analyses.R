@@ -7,6 +7,7 @@ library(DHARMa)
 library(car)
 library(ggsci)
 library(emmeans)
+library(mdscore)
 
 ### Weekly egg laying rate ###
 # Loading egg data
@@ -24,6 +25,5 @@ ggplot(data = eggs, aes(x = week, y = daily_rate_weighted, fill = treatment)) + 
 
 eggs$week <- as.numeric(eggs$week)
 
-egg_model <- lm(data = eggs, eggs ~ treatment*week)
-plot(egg_model)
-summary(egg_model)
+egg_model <- lm(data = eggs, eggs ~ treatment + week)
+Anova(egg_model)
