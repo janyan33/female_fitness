@@ -1,4 +1,4 @@
-# FILE DIRECTORY
+# File directory
 
 Experiment 1: Female fitness
 Everything is located in the female_fitness folder
