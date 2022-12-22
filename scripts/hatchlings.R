@@ -20,19 +20,31 @@ My_Theme = theme(
 hatchlings_per_fem <- read.csv("data/hatchlings.csv") %>% 
                       filter(treatment == "Low" | treatment == "High")  #bc there's lots of empty rows 
 
+
 hatchlings_per_fem$total <- as.numeric(hatchlings_per_fem$total)
 hatchlings_per_fem$treatment <- factor(hatchlings_per_fem$treatment, levels = c("Low", "High")) # re-order factor levels
 
 ggplot(data = hatchlings_per_fem, aes(x = treatment, y = total, fill = treatment)) + geom_boxplot(outlier.colour = NA) + 
-  scale_fill_manual(values = c("#0072b5", "#bc3c29")) + ylab("Number of hatchlings produced per female") + ylim(0, 150) +
- # geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position=position_dodge(0.8), alpha = 0.8) + My_Theme + 
-  xlab("Treatment") #+ theme(legend.position = "none")
+  scale_fill_manual(values = c("#0072b5", "#bc3c29")) + ylab("Number of hatchlings produced") + ylim(0, 170) +
+  geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position=position_dodge(0.8), alpha = 0.8) + My_Theme + 
+  xlab("Treatment") + theme(legend.position = "none")
 
 # Hatchling model
 hatchlings_mod <- glmmTMB(data = hatchlings_per_fem, total ~ treatment, family = nbinom2(link = "log"))
-summary(hatchlings_mod)
+Anova(hatchlings_mod)
 
 plot(simulateResiduals(hatchlings_mod))
 
+mean(hatchlings_per_fem$total, na.rm = TRUE)
 
+# Hatch rate
+ggplot(data = hatchlings_per_fem, aes(x = treatment, y = hatch_rate, fill = treatment)) + geom_boxplot(outlier.colour = NA) + 
+  scale_fill_manual(values = c("#0072b5", "#bc3c29")) + ylab("Hatch rate per arena") +
+  geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.5, position=position_dodge(0.8), alpha = 0.8) + My_Theme + 
+  xlab("Treatment") + theme(legend.position = "none")
+
+
+hatch_rate_mod <- lm(data = hatchlings_per_fem, hatch_rate ~ treatment)
+plot(hatch_rate_mod)
+Anova(hatch_rate_mod)
 
