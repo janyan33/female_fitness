@@ -16,7 +16,7 @@ My_Theme = theme(
   axis.text.y = element_text(size = 16))
 
 ### Weekly egg laying rate ###
-# Loading egg data
+# Loading egg data for plot
 eggs <- read.csv("data/female_fitness_eggs_week.csv")
 
 eggs$treatment <- as.factor(eggs$treatment)
@@ -29,16 +29,12 @@ ggplot(data = eggs, aes(x = week, y = daily_rate_weighted, fill = treatment)) + 
   geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.35, position=position_dodge(0.8), alpha = 0) + 
   theme(axis.text=element_text(size=16), axis.title=element_text(size=16))
 
-eggs$week <- as.numeric(eggs$week)
 
-egg_model <- lm(data = eggs, daily_rate_weighted ~ treatment+week)
+## Loading egg data for model
+egg_mod_data <- read.csv("data/hatchlings.csv")
+
+egg_model <- lm(data = egg_mod_data, egg_lay_rate ~ treatment)
 summary(egg_model)
 Anova(egg_model)
 
-#plot(egg_model)
 
-# Weekly hatch rate boxplot
-ggplot(data = eggs, aes(x = week, y = hatch_rate, fill = treatment)) + #geom_bar(stat = "identity", position = "dodge") + 
-  ylab("Average weekly egg hatch rate") + xlab("Week") + geom_boxplot(outlier.colour = NA) + scale_fill_nejm() + 
-  geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.35, position=position_dodge(0.8), alpha = 0) + 
-  theme(axis.text=element_text(size=16), axis.title=element_text(size=16))
