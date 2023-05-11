@@ -44,7 +44,14 @@ ggplot(data = hatchlings_per_fem, aes(x = treatment, y = hatch_rate, fill = trea
   xlab("Treatment") + theme(legend.position = "none")
 
 
-hatch_rate_mod <- lm(data = hatchlings_per_fem, hatch_rate ~ treatment)
+hatch_rate_mod <- glm(data = hatchlings_per_fem, cbind(total, (eggs - total)) ~ treatment, family = binomial(link = "logit"))
+
 plot(hatch_rate_mod)
 Anova(hatch_rate_mod)
+summary(hatch_rate_mod)
+
+
+hist(hatchlings_per_fem$hatch_rate[hatchlings_per_fem$treatment == "Low"], breaks = 15, xlim = c(0.9, 1), ylim = c(0, 10))
+hist(hatchlings_per_fem$hatch_rate[hatchlings_per_fem$treatment == "High"], breaks = 15, xlim = c(0.9, 1), ylim = c(0, 10))
+
 
