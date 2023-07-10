@@ -26,7 +26,7 @@ eggs$daily_rate <- as.numeric(eggs$daily_rate)
 eggs$treatment <- factor(eggs$treatment, levels = c("low", "high")) # re-order factor levels
 
 # Weekly egg-laying rate boxplot
-ggplot(data = eggs, aes(x = week, y = daily_rate_weighted, fill = treatment)) + #geom_bar(stat = "identity", position = "dodge") + 
+ggplot(data = eggs, aes(x = week, y = daily_rate_weighted, fill = treatment)) + geom_bar(stat = "identity", position = "dodge") + 
   ylab("Average daily egg production") + xlab("Week") + geom_boxplot(outlier.colour = NA) + scale_fill_manual(values = c("#0072b5", "#bc3c29")) + 
   geom_dotplot(binaxis='y', stackdir = 'center', dotsize = 0.35, position=position_dodge(0.8), alpha = 0) + 
   theme(axis.text=element_text(size=16), axis.title=element_text(size=16))
