@@ -51,27 +51,29 @@ ggplot(data = all_data, aes(x = day, y = prop_run, fill = treatment)) + geom_box
        xlab("Day") + My_Theme + coord_cartesian(ylim = c(0, 0.2))
 
 ## MODELS
-focal_data <- read.csv("female_coercion/focal_data.csv") %>% 
-              filter(treatment == "focal")
+focal_data <- read.csv("female_coercion/focal_data.csv")
+
+focal_data$arena <- as.factor(focal_data$arena)
+
 
 # Insemination duration model
-duration_lm <- lm(data = focal_data, log(con_insem_dur + 60) ~ day)
-plot(duration_lm) # looks fine
+duration_lm <- lmer(data = focal_data, log(con_insem_dur + 60) ~ day + (1|arena))
+plot(simulateResiduals(duration_lm)) # looks fine
 summary(duration_lm)
-Anova(duration_lm, test.statistic = "Wald")
+Anova(duration_lm, test.statistic = "Chisq")
 
 # Insemination latency model
-latency_glm <- glm(data = focal_data, log(con_insem_lat + 200) ~ day, family = Gamma(link = "log"))
-plot((latency_glm)) # looks fine
+latency_glm <- lmer(data = focal_data, log(con_insem_lat + 200) ~ day + (1|arena))
+plot(simulateResiduals(latency_glm)) # looks fine
 summary(latency_glm)
-Anova(latency_glm, test.statistic = "Wald")
+Anova(latency_glm, test.statistic = "Chisq")
 
 # Proportion of trial spent running away model
-running_away_glm <- glm(data = focal_data, log(con_prop_run + 2) ~ day, family = quasibinomial())
-plot(running_away_glm)
+running_away_glm <- lmer(data = focal_data, (con_prop_run + 2) ~ day + (1|arena))
+plot(simulateResiduals(running_away_glm))
 
 summary(running_away_glm)
-Anova(running_away_glm, test.statistic = "Wald")
+Anova(running_away_glm, test.statistic = "Chisq")
 
 
 
