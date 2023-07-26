@@ -65,10 +65,21 @@ ggplot(hatchling_sums, aes(x = treatment, y = total, fill = treatment)) + geom_b
 
 
 # Hatchling model
+hatchlings_mod_2 <- glm(data = hatchlings_per_fem, total ~ treatment, family = poisson())
+
+summary(hatchlings_mod_2)
+plot(hatchlings_mod_2)
+Anova(hatchlings_mod_2)
+
+
+
 hatchlings_mod <- glmmTMB(data = hatchlings_per_fem, total ~ treatment, family = nbinom2(link = "log"))
 Anova(hatchlings_mod)
+summary(hatchlings_mod)
 
 plot(simulateResiduals(hatchlings_mod))
+
+
 
 mean(hatchlings_per_fem$total, na.rm = TRUE)
 
