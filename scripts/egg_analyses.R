@@ -36,6 +36,8 @@ ggplot(data = eggs, aes(x = week, y = daily_rate_weighted, fill = treatment)) + 
 egg_mod_data <- read.csv("data/hatchlings.csv")
 
 egg_model <- lm(data = egg_mod_data, egg_lay_rate ~ treatment)
+plot(egg_model)
+
 summary(egg_model)
 Anova(egg_model)
 

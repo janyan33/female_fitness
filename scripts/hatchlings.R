@@ -64,12 +64,12 @@ ggplot(hatchling_sums, aes(x = treatment, y = total, fill = treatment)) + geom_b
 
 
 
-# Hatchling model
+# Hatchling model 
 hatchlings_mod_2 <- glm(data = hatchlings_per_fem, total ~ treatment, family = poisson())
 
 summary(hatchlings_mod_2)
-plot(hatchlings_mod_2)
-Anova(hatchlings_mod_2)
+plot(simulateResiduals(hatchlings_mod_2)) # not good
+Anova(hatchlings_mod_2) # model appears to be overdispersed
 
 
 
@@ -99,5 +99,52 @@ summary(hatch_rate_mod)
 
 hist(hatchlings_per_fem$hatch_rate[hatchlings_per_fem$treatment == "Low"], breaks = 15, xlim = c(0.9, 1), ylim = c(0, 10))
 hist(hatchlings_per_fem$hatch_rate[hatchlings_per_fem$treatment == "High"], breaks = 15, xlim = c(0.9, 1), ylim = c(0, 10))
+
+
+
+ggplot(data = hatchlings_per_fem, aes(x = treatment, y = hatch_rate)) + geom_boxplot() + geom_point() + My_Theme + 
+       ylab("Hatch rate per arena")
+
+
+
+
+
+
+
+
+## NEW MODEL 2023-07-27
+egg_data <- read.csv("data/female_fitness_eggs_week.csv") %>% 
+            mutate(treatment_arena = paste(treatment, arena, sep = "")) %>% 
+            filter(treatment_arena != "high11" & treatment_arena != "low17") # filter out discarded arenas
+
+# Turn variables into factors
+egg_data$treatment <- as.factor(egg_data$treatment) 
+egg_data$arena <- as.factor(egg_data$arena) 
+
+# Model
+egg_mod <- lmer(data = egg_data, daily_rate_weighted ~ treatment*week + (1|treatment:arena))
+
+plot(simulateResiduals(egg_mod))
+
+
+summary(egg_mod)
+Anova(egg_mod)
+
+testDispersion(egg_mod)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
