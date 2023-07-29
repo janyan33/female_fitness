@@ -122,15 +122,15 @@ egg_data$treatment <- as.factor(egg_data$treatment)
 egg_data$arena <- as.factor(egg_data$arena) 
 
 # Model
-egg_mod <- lmer(data = egg_data, daily_rate_weighted ~ treatment*week + (1|treatment:arena))
+egg_mod <- glmer(data = egg_data, eggs ~ treatment*week + offset(log(days_alive)) + (1|treatment:arena), 
+                 family = poisson())
 
 plot(simulateResiduals(egg_mod))
 
 
+
 summary(egg_mod)
 Anova(egg_mod)
-
-testDispersion(egg_mod)
 
 
 
