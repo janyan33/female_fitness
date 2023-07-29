@@ -68,12 +68,28 @@ plot(simulateResiduals(latency_glm)) # looks fine
 summary(latency_glm)
 Anova(latency_glm, test.statistic = "Chisq")
 
+
+
+
 # Proportion of trial spent running away model
-running_away_glm <- lmer(data = focal_data, (con_prop_run + 2) ~ day + (1|arena))
+running_away_glm <- lmer(data = focal_data, (con_prop_run + 2) ~ day + 
+                        (1|arena))
 plot(simulateResiduals(running_away_glm))
 
 summary(running_away_glm)
 Anova(running_away_glm, test.statistic = "Chisq")
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -110,8 +126,8 @@ ggplot(data = focal_data, aes(x = day, y = prop_run)) + geom_boxplot(fill = "#bc
   scale_fill_nejm() + ylab("Proportion of trial spent running away") + xlab("Day") + My_Theme
 
 focal_data$day <- as.numeric(focal_data$day)
-evasion_lm_new <- lm(data = focal_data, prop_run ~ day)
+evasion_lm_new <- lmer(data = focal_data, prop_run ~ day + (1|arena))
 plot(evasion_lm_new)
 summary(evasion_lm_new)
-
+Anova(evasion_lm_new)
 
