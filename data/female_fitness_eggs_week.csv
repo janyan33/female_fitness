@@ -317,7 +317,7 @@ low,8,june 30 - july 7,15,11,1.571428571,1.571428571,,11,1,7
 low,8,june 30 - july 7,16,9,1.285714286,1.285714286,,9,1,7
 low,8,june 30 - july 7,17,NA,NA,NA,,0,NA,NA
 low,8,june 30 - july 7,18,10,1.428571429,1.428571429,,10,1,7
-low,8,june 30 - july 7,19,0,0,0,died halfway into week 8; denominator divided by 4,0,NA,NA
+low,8,june 30 - july 7,19,0,0,0,died halfway into week 8; denominator divided by 4,0,NA,4
 low,8,june 30 - july 7,20,12,1.714285714,1.714285714,,12,1,7
 high,9,july 7 - july 14,1,NA,NA,NA,,0,NA,NA
 high,9,july 7 - july 14,2,NA,NA,NA,,0,NA,NA
@@ -414,7 +414,7 @@ high,11,july 21 - july 28,12,NA,NA,NA,,0,NA,NA
 high,11,july 21 - july 28,13,NA,NA,NA,,0,NA,NA
 high,11,july 21 - july 28,14,NA,NA,NA,,0,NA,NA
 high,11,july 21 - july 28,15,NA,NA,NA,,0,NA,NA
-high,11,july 21 - july 28,16,0,0,0,,0,NA,NA
+high,11,july 21 - july 28,16,0,0,0,,0,NA,6
 high,11,july 21 - july 28,17,NA,NA,NA,,0,NA,NA
 high,11,july 21 - july 28,18,NA,NA,NA,,0,NA,NA
 high,11,july 21 - july 28,19,1,0.142857143,0.25,died halfway into week 11; denominator divided by 4,1,1,4

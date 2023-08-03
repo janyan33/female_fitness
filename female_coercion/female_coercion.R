@@ -63,16 +63,15 @@ summary(duration_lm)
 Anova(duration_lm, test.statistic = "Chisq")
 
 # Insemination latency model
-latency_glm <- lmer(data = focal_data, log(con_insem_lat + 200) ~ day + (1|arena))
+latency_glm <- lmer(data = focal_data, log(con_insem_lat + 130) ~ day + (1|arena))
 plot(simulateResiduals(latency_glm)) # looks fine
-summary(latency_glm)
 Anova(latency_glm, test.statistic = "Chisq")
 
 
 
 
 # Proportion of trial spent running away model
-running_away_glm <- lmer(data = focal_data, (con_prop_run + 2) ~ day + 
+running_away_glm <- lmer(data = focal_data, log(con_prop_run_2) ~ day + 
                         (1|arena))
 plot(simulateResiduals(running_away_glm))
 

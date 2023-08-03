@@ -1,5 +1,5 @@
 ---
-title: "Analyses for Behavioral Ecology ms"
+title: "Analyses for bed bug sexual dynamics manuscript"
 author: "Janice Yan"
 date: '2023-07-29'
 output: word_document
@@ -7,11 +7,219 @@ output: word_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2); theme_set(theme_classic())
+library(survival)
+library(survminer)
+library(tidyverse)
+library(ggsci)
+library(car)
+library(lme4)
+library(glmmTMB)
+library(DHARMa)
+
+My_Theme = theme(
+  axis.title.x = element_text(size = 18),
+  axis.text.x = element_text(size = 16),
+  axis.title.y = element_text(size = 18), 
+  axis.text.y = element_text(size = 16))
+
+```
+Updated analyses for the Behavioural Ecology manuscript Experiments 1 and 3. 
+
+# Experiment 1: The fitness cost of traumatic insemination
+
+## a) Daily egg laying rate
+
+```{r load weekly data, include = FALSE} 
+weekly_data <- read.csv("data/female_fitness_eggs_week.csv") %>% # loading data in
+               mutate(treatment_arena = paste(treatment, arena, sep = "")) %>% 
+               filter(treatment_arena != "high11" & treatment_arena != "low17") # filter out discarded arenas
+
+# Turn variables into factors
+weekly_data$treatment <- as.factor(weekly_data$treatment) 
+weekly_data$arena <- as.factor(weekly_data$arena) 
+```
+
+```{r egg laying fig, echo=FALSE, message=FALSE, warning=FALSE}
+weekly_data$week <- as.factor(weekly_data$week)
+weekly_data$treatment <- factor(weekly_data$treatment, levels = c("low", "high")) # re-order factor levels
+
+ggplot(data = weekly_data, aes(x = week, y = daily_rate_weighted, fill = treatment)) + 
+  ylab("Average daily egg production") + xlab("Week") + geom_boxplot() +
+  scale_fill_manual(values = c("#0072b5", "#bc3c29"))+ 
+  theme(axis.text=element_text(size=16), axis.title=element_text(size=16))
+
+weekly_data$week <- as.numeric(weekly_data$week)
+```
+
+The goal of this analysis is to see whether insemination rate affects the egg production rate of females while they are alive. Therefore, when females died, eggs produced was entered as NA, not zero. 
+
+Here I fit a GLMM with treatment and week as fixed factors and arena number as a random factor (nested within treatment because the same numbers are used across treatments). I used number of eggs as the response variable with log(days_alive) as an offset to account for females dying in the middle of a week and having fewer days to produce eggs as suggested by Ben Bolker in data-lunch. Using total number of eggs with an offset for days instead of egg production rate (eggs laid/days for laying) allows me to use a poisson or negative binomial distribution instead of the standard linear model. I showed the plots for the linear model at data-lunch and both Ben and Jonathan suggested poisson or negative binomial instead.  
+
+I ended up using a negative binomial distribution. The residuals vs. predicted plot still isn't ideal (red lines don't align with black lines well) but this is the best fit I've been able to achieve and better than using the standard linear model or the poisson distribution. I plotted the residuals against my predictors (week and treatment) as recommended by others. Within-group distribution and variance appear to be fairly uniform across the the two treatments when I plot the model residuals against treatment so I think we are overall fine to use this model.
+
+I've included the code used to generate all statistical models.
+
+```{r daily hatch rate model}
+egg_mod <- glmmTMB(data = weekly_data, eggs ~ treatment + week + offset(log(days_alive)) + (1|treatment:arena),
+                 family = nbinom1())
+
+```
+
+```{r Experiment 1a egg model residual plots, include = FALSE}
+plotResiduals(egg_mod)
+plotResiduals(egg_mod, form = weekly_data[!(is.na(weekly_data$eggs)),]$week, xlab = "Week")
+plot(simulateResiduals(egg_mod), form = weekly_data[!(is.na(weekly_data$eggs)),]$treatment, xlab = "Treatment")
+
 ```
 
 
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+``` {r daily egg laying rate model output}
+Anova(egg_mod)
 ```
+**Overall, we get a highly significant result of both treatment and week.**
+
+## b) Lifetime hatchling production 
+
+```{r hatchling production, echo=FALSE, message=FALSE, warning=FALSE}
+weekly_data$week <- as.factor(weekly_data$week)
+
+ggplot(data = weekly_data, aes(x = week, y = hatchlings, fill = treatment)) + 
+  ylab("Average daily egg production") + xlab("Week") + geom_boxplot() +
+  scale_fill_manual(values = c("#0072b5", "#bc3c29"))+ 
+  theme(axis.text=element_text(size=16), axis.title=element_text(size=16))
+
+weekly_data$week <- as.numeric(weekly_data$week)
+```
+
+Here we wanted to look at the effect of insemination rate on hatchling production. When females died, hatchlings produced was entered as 0 and not NA. These results are intentionally not independent of differential mortality since we are interested in lifetime fitness here.
+
+For this analysis, I used a linear model with hatchlings produced per week as the response variable. I included treatment and week as fixed factors and arena number as a random factor. I tried fitting a Poisson distribution seeing as this is count data but the model fit appeared to be worse than a standard linear model based on the DHARMa diagnostic plots. When I try to use a poisson distribution, the residuals deviate much more from the model prediction and I also get a warning that says "qu = 0.25, log(sigma) = -2.424222 : outer Newton did not converge fully." Negative binomial looked better than poisson but not better than a linear model. 
+
+```{r hatchlings produced model}
+hatchling_mod <- lmer(data = weekly_data, hatchlings ~ treatment + week + (1|treatment:arena))
+```
+
+```{r residuals for experiment 1b, hatchling production, include = FALSE}
+plotResiduals(hatchling_mod)
+plotResiduals(hatchling_mod, form = weekly_data$week)
+plotResiduals(hatchling_mod, form = weekly_data$treatment)
+```
+
+```{r hatchling model output}
+Anova(hatchling_mod)
+```
+**Again, we get a highly significant result of both treatment and week.**
+
+## c) Egg hatch rates 
+Lastly, we wanted to examine whether eggs from females of both treatments hatched at different rates as a measure of indirect fitness. Increased egg viability in high-insemination rate females could be an indication that many inseminations provide a genetic benefit to females. 
+
+To analyse this, we used cbind(hatched eggs, unhatched eggs) as the response variable in a binomial model as suggested by a reviewer. Again we had treatment and week as fixed factors and arena number as a random factor. 
+
+```{r, include = FALSE}
+weekly_data <- weekly_data %>% 
+               mutate(eggs_no_na = ifelse(is.na(eggs), 0, eggs))
+
+hatch_rate_mod <- glmer(data = weekly_data, cbind(hatchlings, (eggs_no_na - hatchlings)) ~
+                        treatment + week + (1|treatment:arena), family = binomial())
+
+#plot(simulateResiduals(hatch_rate_mod), form = weekly_data$week)
+#plot(simulateResiduals(hatch_rate_mod), form = weekly_data$treatment)
+
+```
+
+```{r hatch rate output}
+Anova(hatch_rate_mod)
+```
+**Hatch rate did not significantly differ between groups. We did not intend on including a figure in the manuscript for this which is why I haven't generated one here.**
+
+# Experiment 3: Responses to consecutive daily inseminations
+In this experiment, we tracked change in insemination duration, female evasion rate (proportion of trial spent evading males), and insemination latency as females received one insemination per day for six consecutive days. 
+For all of these models, we controlled for day effects by subtracting the average raw score for the 13 virgin females tested on a given day from the raw score of each of the 13 focal females. For example, the average insemination duration for virgins on day 1 was 74.749 seconds so we subtracted that value from all the day 1 insemination durations for focal females. We then added a positive integer to all the focal values across all days so that all values were positive making it easy to transform our response variables to achieve better model fits if needed. When picking what integer to add, we chose the smallest one possible that would ensure no negative or zero values.
+
+```{r generating response variables from raw data, include=FALSE}
+exp_3_all <- read.csv("female_coercion/female_coercion_all_R.csv")
+
+exp_3_all <- exp_3_all %>% 
+             mutate(trial_dur = trial_end - encounter) 
+
+exp_3_all$trial_dur[is.na(exp_3_all$trial_dur)] <- 1200
+exp_3_all$running_away_dur[is.na(exp_3_all$running_away_dur)] <- 0
+exp_3_all$refusal_posture[is.na(exp_3_all$refusal_posture)] <- 0
+exp_3_all$insem_resist[is.na(exp_3_all$insem_resist)] <- 0
+exp_3_all$mounts[is.na(exp_3_all$mounts)] <- 0
+
+exp_3_all <- exp_3_all %>%  
+            mutate(prop_run = (running_away_dur + refusal_posture)/(trial_dur - insem_dur)) %>% 
+            mutate(prop_insem_resist = insem_resist/insem_dur) %>% 
+            mutate(insem_lat = insem_start - encounter)
+
+exp_3_all$day <- as.factor(exp_3_all$day)
+```
+
+```{r load exp 3 model data in, include=FALSE}
+# different data file from the file used to generate boxplots because I plotted raw values for boxplots but want to use the values that take into account day effects for the models and those are in the focal_data file
+
+focal_data <- read.csv("female_coercion/focal_data.csv")
+focal_data$arena <- as.factor(focal_data$arena)
+```
+
+## a) Change in evasion rate as a function of prior consecutive inseminations
+
+``` {r evasion rate boxplot, echo = FALSE, warning = FALSE}
+ggplot(data = exp_3_all, aes(x = day, y = prop_run, fill = treatment)) + geom_boxplot() + 
+       scale_fill_nejm() + ylim(0, 0.2) + ylab("Female evasion rate") + 
+       xlab("Day") + My_Theme + coord_cartesian(ylim = c(0, 0.2))
+```
+
+I first looked at proportion of trial duration females spent evading males. I fit a LMM with the log of evasion rate, after controlling for day effects, as the response variable and day (which directly corresponds to # of inseminations) as a fixed effect. Arena was included as a random effect. I logged the response variable to meet model assumptions because had I not, diagnostic plots showed several issues in both the QQ residual plot and residuals as a function of categorical predictor plot. 
+
+I did get a singular fit warning meaning the estimation of the random effect variance appears to be zero. I've left the random effect in the model but I believe it is effectively doing nothing and makes no difference?
+
+``` {r evasion rate model}
+running_away_lm <- lmer(data = focal_data, log(con_prop_run_2) ~ day + 
+                        (1|arena))
+
+#plot(simulateResiduals(running_away_lm))
+Anova(running_away_lm)
+```
+**Overall, number of prior inseminations does significantly affect female evasion rate.**
+
+## b) Change in insemination latency as a function of prior consecutive inseminations
+```{r insem latency boxplot, echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(data = exp_3_all, aes(x = day, y = insem_lat, fill = treatment)) + geom_boxplot() + 
+       scale_fill_nejm() + ylab("Insemination latency (s)") + xlab("Day") + My_Theme + 
+       coord_cartesian(ylim = c(0, 1000))
+```
+
+I then analyzed insemination latency with day as a fixed effect and arena as a random effect. I once again logged the response variable which was insemination latency in seconds minus the average day effect score for each day plus an integer to avoid negative values. This helped me achieve a better fit for the model. Even after logging, I still get a warning for Levene's homogeneity of variance test when generating the diagnostic plots but the plot itself doesn't look too bad so I think this is a reasonable model to go with.  
+
+
+``` {r Exp 3 insemination latency model}
+latency_glm <- lmer(data = focal_data, log(con_insem_lat_2) ~ day + (1|arena))
+#plot(simulateResiduals(latency_glm))
+Anova(latency_glm)
+```
+**Number of prior inseminations did not affect insemination latency.** 
+
+## c) Change in insemination duration as a function of prior consecutive inseminations
+```{r Insemination duration boxplot, echo=FALSE, message=FALSE, warning=FALSE}
+# Insemination duration boxplot
+ggplot(data = exp_3_all, aes(x = day, y = insem_dur, fill = treatment)) + geom_boxplot() + 
+       scale_fill_nejm() + ylab("Insemination duration (s)") + xlab("Day") + My_Theme
+```
+
+Lastly, for the insemination duration model, we fit a LMM with insemination duration as the response variable, day as a fixed effect, and arena as a random effect. We controlled for day effects the same way we did for insemination latency. The DHARMa residual plot looks completely fine.
+
+``` {r Exp 3 insemination duration model}
+# Insemination duration model
+duration_lm <- lmer(data = focal_data, con_insem_dur ~ day + (1|arena))
+
+Anova(duration_lm)
+```
+
+**Overall, insemination duration significantly decreases as females receive more consecutive inseminations.** 
+
+
 
