@@ -1,0 +1,17 @@
+---
+title: "Analyses for Behavioral Ecology ms"
+author: "Janice Yan"
+date: '2023-07-29'
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
