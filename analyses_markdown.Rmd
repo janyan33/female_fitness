@@ -8,6 +8,7 @@ output: word_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
+library(ggrepel)
 library(ggplot2); theme_set(theme_classic())
 library(survival)
 library(survminer)
@@ -45,12 +46,19 @@ weekly_data$arena <- as.factor(weekly_data$arena)
 weekly_data$week <- as.factor(weekly_data$week)
 weekly_data$treatment <- factor(weekly_data$treatment, levels = c("low", "high")) # re-order factor levels
 
+N_eggs <- aggregate(eggs ~ treatment + week, data = weekly_data, FUN = length) # calculates sample size per group
+top_eggs <- aggregate(daily_rate_weighted ~ 
+                      treatment + week, data = weekly_data, FUN = max)$daily_rate_weighted # calculates max per group
+
 ggplot(data = weekly_data, aes(x = week, y = daily_rate_weighted, fill = treatment)) + 
   ylab("Average daily egg production") + xlab("Week") + geom_boxplot() +
-  scale_fill_manual(values = c("#0072b5", "#bc3c29"))+ 
-  theme(axis.text=element_text(size=16), axis.title=element_text(size=16))
+  scale_fill_manual(values = c("#0072b5", "#bc3c29")) + ylim(0, 5) +
+  theme(axis.text=element_text(size=16), axis.title=element_text(size=16)) + 
+  geom_text(data = N_eggs, aes(week, label = eggs, y = top_eggs), size = 4, vjust = -0.6,
+            position = position_jitterdodge(dodge.width = 0.85, jitter.height = 0, jitter.width = 0))
 
 weekly_data$week <- as.numeric(weekly_data$week)
+
 ```
 
 The goal of this analysis is to see whether insemination rate affects the egg production rate of females while they are alive. Therefore, when females died, eggs produced was entered as NA, not zero. 
@@ -85,10 +93,16 @@ Anova(egg_mod)
 ```{r hatchling production, echo=FALSE, message=FALSE, warning=FALSE}
 weekly_data$week <- as.factor(weekly_data$week)
 
+N_hatchlings <- aggregate(hatchlings ~ treatment + week, data = weekly_data, FUN = length) # calculates sample size per group
+top_hatchlings <- aggregate(hatchlings ~ 
+                      treatment + week, data = weekly_data, FUN = max)$hatchlings # calculates max per group
+
 ggplot(data = weekly_data, aes(x = week, y = hatchlings, fill = treatment)) + 
-  ylab("Average daily egg production") + xlab("Week") + geom_boxplot() +
-  scale_fill_manual(values = c("#0072b5", "#bc3c29"))+ 
-  theme(axis.text=element_text(size=16), axis.title=element_text(size=16))
+  ylab("Hatchling production") + xlab("Week") + geom_boxplot() +
+  scale_fill_manual(values = c("#0072b5", "#bc3c29")) + ylim(0, 22) +  
+  theme(axis.text=element_text(size=16), axis.title=element_text(size=16)) + 
+  geom_text(data = N_hatchlings, aes(week, label = hatchlings, y = top_hatchlings), size = 4, vjust = -0.8,
+            position = position_jitterdodge(dodge.width = 0.85, jitter.height = 0, jitter.width = 0))
 
 weekly_data$week <- as.numeric(weekly_data$week)
 ```
@@ -218,7 +232,6 @@ duration_lm <- lmer(data = focal_data, con_insem_dur ~ day + (1|arena))
 
 Anova(duration_lm)
 ```
-
 **Overall, insemination duration significantly decreases as females receive more consecutive inseminations.** 
 
 
