@@ -8,10 +8,7 @@ output: word_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-library(ggrepel)
 library(ggplot2); theme_set(theme_classic())
-library(survival)
-library(survminer)
 library(tidyverse)
 library(ggsci)
 library(car)
@@ -78,8 +75,7 @@ egg_mod <- glmmTMB(data = weekly_data, eggs ~ treatment + week + offset(log(days
 ```{r Experiment 1a egg model residual plots, include = FALSE}
 plotResiduals(egg_mod)
 plotResiduals(egg_mod, form = weekly_data[!(is.na(weekly_data$eggs)),]$week, xlab = "Week")
-plot(simulateResiduals(egg_mod), form = weekly_data[!(is.na(weekly_data$eggs)),]$treatment, xlab = "Treatment")
-
+plotResiduals(egg_mod, form = weekly_data[!(is.na(weekly_data$eggs)),]$treatment, xlab = "Treatment")
 ```
 
 
@@ -138,8 +134,8 @@ weekly_data <- weekly_data %>%
 hatch_rate_mod <- glmer(data = weekly_data, cbind(hatchlings, (eggs_no_na - hatchlings)) ~
                         treatment + week + (1|treatment:arena), family = binomial())
 
-#plot(simulateResiduals(hatch_rate_mod), form = weekly_data$week)
-#plot(simulateResiduals(hatch_rate_mod), form = weekly_data$treatment)
+plot(simulateResiduals(hatch_rate_mod), form = weekly_data$week)
+plot(simulateResiduals(hatch_rate_mod), form = weekly_data$treatment)
 
 ```
 
@@ -192,11 +188,11 @@ I first looked at proportion of trial duration females spent evading males. I fi
 I did get a singular fit warning meaning the estimation of the random effect variance appears to be zero. I've left the random effect in the model but I believe it is effectively doing nothing and makes no difference?
 
 ``` {r evasion rate model}
-running_away_lm <- lmer(data = focal_data, log(con_prop_run_2) ~ day + 
+evade_mod <- lmer(data = focal_data, log(con_prop_run_2) ~ day + 
                         (1|arena))
 
-#plot(simulateResiduals(running_away_lm))
-Anova(running_away_lm)
+#plot(simulateResiduals(running_away_mod))
+Anova(evade_mod)
 ```
 **Overall, number of prior inseminations does significantly affect female evasion rate.**
 
@@ -211,9 +207,9 @@ I then analyzed insemination latency with day as a fixed effect and arena as a r
 
 
 ``` {r Exp 3 insemination latency model}
-latency_glm <- lmer(data = focal_data, log(con_insem_lat_2) ~ day + (1|arena))
-#plot(simulateResiduals(latency_glm))
-Anova(latency_glm)
+latency_mod <- lmer(data = focal_data, log(con_insem_lat_2) ~ day + (1|arena))
+#plot(simulateResiduals(latency_mod))
+Anova(latency_mod)
 ```
 **Number of prior inseminations did not affect insemination latency.** 
 
@@ -228,9 +224,9 @@ Lastly, for the insemination duration model, we fit a LMM with insemination dura
 
 ``` {r Exp 3 insemination duration model}
 # Insemination duration model
-duration_lm <- lmer(data = focal_data, con_insem_dur ~ day + (1|arena))
+duration_mod <- lmer(data = focal_data, con_insem_dur ~ day + (1|arena))
 
-Anova(duration_lm)
+Anova(duration_mod)
 ```
 **Overall, insemination duration significantly decreases as females receive more consecutive inseminations.** 
 

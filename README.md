@@ -1,5 +1,7 @@
 # File directory
 
+I've added an RMarkdown file which generates a Word doc detailing the updated analyses for Experiments 1 (excluding longevity because this remained unchanged) and 3.
+
 Experiment 1: Female fitness
 Everything is located in the female_fitness folder
 R project file: female_fitness.Rproj
@@ -20,3 +22,5 @@ Everything is also located in the female fitness folder
 R project file: female_fitness.Rproj
 Code for analyses and visualization: In female_coercion folder 
 	File name: female_coercion.R
+
+I've also added the code for when I analyzed Experiment 3 data without the day effects correction to show that results are the same either way. This can be found on Lines 75 - 89 of the female_coercion.R script. 

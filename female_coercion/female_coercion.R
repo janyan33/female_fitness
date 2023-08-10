@@ -55,11 +55,9 @@ focal_data <- read.csv("female_coercion/focal_data.csv")
 
 focal_data$arena <- as.factor(focal_data$arena)
 
-
 # Insemination duration model
 duration_lm <- lmer(data = focal_data, log(con_insem_dur + 60) ~ day + (1|arena))
 plot(simulateResiduals(duration_lm)) # looks fine
-summary(duration_lm)
 Anova(duration_lm, test.statistic = "Chisq")
 
 # Insemination latency model
@@ -67,66 +65,26 @@ latency_glm <- lmer(data = focal_data, log(con_insem_lat + 130) ~ day + (1|arena
 plot(simulateResiduals(latency_glm)) # looks fine
 Anova(latency_glm, test.statistic = "Chisq")
 
-
-
-
 # Proportion of trial spent running away model
 running_away_glm <- lmer(data = focal_data, log(con_prop_run_2) ~ day + 
                         (1|arena))
 plot(simulateResiduals(running_away_glm))
-
-summary(running_away_glm)
 Anova(running_away_glm, test.statistic = "Chisq")
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-##### NEW
+#### ANALYSES FOR EXPERIMENT 3 WITHOUT CORRECTION FOR DAY EFFECTS
 # Insemination duration boxplot
-
-focal_data$treatment <- as.factor(focal_data$treatment)
-focal_data$day <- as.factor(focal_data$day)
-
-ggplot(data = focal_data, aes(x = day, y = insem_dur)) + geom_boxplot(fill = "#bc3c29") + 
-  scale_fill_nejm() + ylab("Insemination duration (s)") + xlab("Day") + My_Theme
-
-focal_data$day <- as.numeric(focal_data$day)
-duration_lm_new <- lm(data = focal_data, insem_dur ~ day)
-plot(duration_lm_new) # looks fine
-summary(duration_lm_new)
-
+duration_mod <- lmer(data = focal_data, log(insem_dur) ~ day + (1|arena))
+plot(simulateResiduals(duration_mod)) # looks good
+Anova(duration_mod)
 
 ## Insemination latency
-
-focal_data$day <- as.factor(focal_data$day)
-ggplot(data = focal_data, aes(x = day, y = insem_lat)) + geom_boxplot(fill = "#bc3c29") + 
-  scale_fill_nejm() + ylab("Insemination latency (s)") + xlab("Day") + My_Theme
-
-focal_data$day <- as.numeric(focal_data$day)
-latency_lm_new <- lm(data = focal_data, log(insem_lat) ~ day)
-plot(latency_lm_new)
-summary(latency_lm_new)
-
+latency_mod <- lmer(data = focal_data, log(insem_lat) ~ day + (1|arena))
+plot(simulateResiduals(latency_mod)) # looks good
+Anova(latency_mod)
 
 # Proportion of trial spent running away model
-focal_data$day <- as.factor(focal_data$day)
-ggplot(data = focal_data, aes(x = day, y = prop_run)) + geom_boxplot(fill = "#bc3c29") + 
-  scale_fill_nejm() + ylab("Proportion of trial spent running away") + xlab("Day") + My_Theme
-
-focal_data$day <- as.numeric(focal_data$day)
-evasion_lm_new <- lmer(data = focal_data, prop_run ~ day + (1|arena))
-plot(evasion_lm_new)
-summary(evasion_lm_new)
-Anova(evasion_lm_new)
+evasion_mod <- lmer(data = focal_data, asin(sqrt(prop_run)) ~ day + (1|arena))
+plot(simulateResiduals(evasion_mod)) # looks good
+Anova(evasion_mod)
 
