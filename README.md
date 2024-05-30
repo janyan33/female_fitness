@@ -12,9 +12,8 @@ Code for analyses and visualization: In scripts folder
 	File name: observations_analysis.R
 Code for creating network visualizations: In scripts folder 
 	File name: sexual_networks.R
+The igraphplot2.R script is just for modifying some network aesthetic properties. It's used in the sexual_networks.R file
 
-**Experiment 3: Successive traumatic inseminations** (we called this female_coercion at the time of the experiment)
+**Experiment 3: Successive traumatic inseminations** 
 
-Everything is also located in the analyses_markdown files. 
-
-I've also added the code for when I analyzed Experiment 3 data without the day effects correction to show that results are the same either way. This can be found on Lines 75 - 89 of the female_coercion.R script. 
+Everything is also located in the analyses_markdown files.
