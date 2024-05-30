@@ -11,9 +11,8 @@ library(ggsci)
 library(emmeans)
 
 ##### LOADING AND CLEANING DATA
-
 # All observations raw
-all_obs <- read.csv("data/rep_status_all_data.csv") %>% 
+all_obs <- read.csv("female_insem_status/data/rep_status_all_data.csv") %>% 
            filter(notes != "exclude")
 
            all_obs$replicate <- as.factor(all_obs$replicate)
@@ -52,6 +51,14 @@ Anova(mount_insem_model)
 plot(simulateResiduals(mount_insem_model))
 
 ###################### DATA VISUALIZATION ######## #############
+# Data summarized for each female
+fem_data <- read.csv("female_insem_status/data/attributes.csv") %>%  
+                     filter(sex == "female")
+
+fem_data$replicate <- as.factor(fem_data$replicate)
+fem_data$treatment <- as.factor(fem_data$treatment)
+fem_data$insem_status <- as.factor(fem_data$insem_status)
+fem_data$ID <- as.factor(fem_data$ID)
 
 ##### FEMALE AVOIDANCE AND MALE REJECTION OF FEMALES
 # Female avoidance rate (not sig; p = 0.32)
@@ -71,3 +78,23 @@ ggplot(data = fem_data, aes(x = treatment, y = insem_mount_ratio)) + geom_boxplo
        geom_jitter(alpha = 0.4, aes(color = replicate), size = 3, width = 0.1, height = 0) + 
        labs(y = "Proportion of mounts that led to insemination", x = "Female mating status") + scale_color_nejm() + 
        theme(text = element_text(size = 16))
+
+#### EXTRA FIGS IN SUPP 
+# Mounts received
+ggplot(data = fem_data, aes(x = treatment, y = mounts)) + geom_boxplot(outlier.shape = NA, fill = "lightcyan4", alpha = 0.1) + 
+       geom_jitter(alpha = 0.4, aes(color = replicate), size = 2.5, width = 0.15, height = 0) + 
+       labs(y = "Mounts", x = "Female mating status") + scale_color_nejm() + 
+       theme(text = element_text(size = 20))
+
+# Inseminations received 
+ggplot(data = fem_data, aes(x = treatment, y = inseminations)) + geom_boxplot(outlier.shape = NA, fill = "lightcyan4", alpha = 0.1) + 
+       geom_jitter(alpha = 0.4, aes(color = replicate), size = 3, width = 0.2, height = 0.) + 
+       labs(y = "Inseminations", x = "Female mating status") + scale_color_nejm() + 
+       theme(text = element_text(size = 20))
+
+
+
+
+
+
+

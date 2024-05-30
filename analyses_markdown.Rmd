@@ -149,7 +149,7 @@ In this experiment, we tracked change in insemination duration, female evasion r
 For all of these models, we controlled for day effects by subtracting the average raw score for the 13 virgin females tested on a given day from the raw score of each of the 13 focal females. For example, the average insemination duration for virgins on day 1 was 74.749 seconds so we subtracted that value from all the day 1 insemination durations for focal females. We then added a positive integer to all the focal values across all days so that all values were positive making it easy to transform our response variables to achieve better model fits if needed. When picking what integer to add, we chose the smallest one possible that would ensure no negative or zero values.
 
 ```{r generating response variables from raw data, include=FALSE}
-exp_3_all <- read.csv("female_coercion/female_coercion_all_R.csv")
+exp_3_all <- read.csv("data/female_coercion_all_R.csv")
 
 exp_3_all <- exp_3_all %>% 
              mutate(trial_dur = trial_end - encounter) 
@@ -171,7 +171,7 @@ exp_3_all$day <- as.factor(exp_3_all$day)
 ```{r load exp 3 model data in, include=FALSE}
 # different data file from the file used to generate boxplots because I plotted raw values for boxplots but want to use the values that take into account day effects for the models and those are in the focal_data file
 
-focal_data <- read.csv("female_coercion/focal_data.csv")
+focal_data <- read.csv("data/focal_data.csv")
 focal_data$arena <- as.factor(focal_data$arena)
 ```
 
@@ -217,7 +217,7 @@ Anova(latency_mod)
 ```{r Insemination duration boxplot, echo=FALSE, message=FALSE, warning=FALSE}
 # Insemination duration boxplot
 ggplot(data = exp_3_all, aes(x = day, y = insem_dur, fill = treatment)) + geom_boxplot() + 
-       scale_fill_nejm() + ylab("Insemination duration (s)") + xlab("Day") + My_Theme
+       scale_fill_nejm() + ylab("Insemination duration (s)") + xlab("Day") + My_Theme + ylim(0, 150)
 ```
 
 Lastly, for the insemination duration model, we fit a LMM with insemination duration as the response variable, day as a fixed effect, and arena as a random effect. We controlled for day effects the same way we did for insemination latency. The DHARMa residual plot looks completely fine.

@@ -72,5 +72,5 @@ tk_set_coords(id, coords_5) # Set stored coordinates to trial #1
 tkplot.fit.to.screen(id)
 
 
-write.csv(coords_5, "coords_5.csv")
+#write.csv(coords_5, "coords_5.csv")
 
